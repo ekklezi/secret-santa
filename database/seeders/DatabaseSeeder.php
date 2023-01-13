@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Participant;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,11 +16,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $participants = Participant::factory(10)->create();
+        $shuffled_participants = $participants->shuffle();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $participants->each(function ($item, $key) use($shuffled_participants){
+            $item->update([
+                'giftee_id' => $shuffled_participants->slice($key, 1)->first()->id
+            ]);
+        });
     }
 }
